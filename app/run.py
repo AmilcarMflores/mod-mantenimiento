@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from controllers import mantenimiento_controller
 from database import db
 import os
@@ -16,9 +16,19 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 db.init_app(app)
 app.register_blueprint(mantenimiento_controller.mantenimiento_bp)
 
+# Ruta raíz que redirige a la lista de mantenimientos
+@app.route("/")
+def index():
+    return redirect(url_for("mantenimiento.list_mantenimiento"))
+
 with app.app_context():
     db.create_all()
     print("✓ Base de datos y tablas creadas correctamente.")
+    print("✓ Servidor corriendo en: http://127.0.0.1:5000")
+    print("✓ Rutas disponibles:")
+    print("   - http://127.0.0.1:5000/")
+    print("   - http://127.0.0.1:5000/mantenimiento")
+    print("   - http://127.0.0.1:5000/mantenimiento/crear")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

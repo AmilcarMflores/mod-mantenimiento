@@ -43,19 +43,15 @@
                         {% endif %}
                     </td>
                     <td class="actions">
-                        {% if current_user.has_role(['admin', 'mantenimiento']) %}
-                            {% if not ticket.responsable %}
-                                <a href="{{ url_for('mantenimiento.update_ticket_ini', id=ticket.id_mantenimiento) }}" class="btn btn-primary">Iniciar</a>
-                            {% elif not ticket.trabajo_realizado %}
-                                <a href="{{ url_for('mantenimiento.update_ticket_fin', id=ticket.id_mantenimiento) }}" class="btn btn-success">Finalizar</a>
-                            {% endif %}
+                        {% if not ticket.responsable %}
+                            <a href="{{ url_for('mantenimiento.update_ticket_ini', id=ticket.id_mantenimiento) }}" class="btn btn-primary">Iniciar</a>
+                        {% elif not ticket.trabajo_realizado %}
+                            <a href="{{ url_for('mantenimiento.update_ticket_fin', id=ticket.id_mantenimiento) }}" class="btn btn-success">Finalizar</a>
                         {% endif %}
                         <a href="{{ url_for('mantenimiento.generate_ticket', id=ticket.id_mantenimiento) }}" class="btn btn-info">Ver</a>
-                        {% if current_user.has_role(['admin']) %}
-                            <form method="POST" action="{{ url_for('mantenimiento.delete_ticket', id=ticket.id_mantenimiento) }}" style="display:inline;" onsubmit="return confirm('¿Está seguro de eliminar este ticket?');">
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
-                        {% endif %}
+                        <form method="POST" action="{{ url_for('mantenimiento.delete_ticket', id=ticket.id_mantenimiento) }}" style="display:inline;" onsubmit="return confirm('¿Está seguro de eliminar este ticket?');">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

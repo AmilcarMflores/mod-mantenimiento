@@ -1,8 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, flash, Response
-from flask_login import login_required, current_user
 from models.mantenimiento_model import Mantenimiento
 from views import mantenimiento_view
-from utils.decorators import role_required
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
@@ -42,7 +40,7 @@ def create_ticket():
     return mantenimiento_view.crear_ticket()
 
 @mantenimiento_bp.route("/mantenimiento/actualizar_ini/<int:id>", methods=["GET", "POST"])
-@role_required(['admin', 'mantenimiento'])
+# Comentado temporalmente: @role_required(['admin', 'mantenimiento'])
 def update_ticket_ini(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -77,7 +75,7 @@ def update_ticket_ini(id):
     return mantenimiento_view.update_ticket_ini(ticket)
 
 @mantenimiento_bp.route("/mantenimiento/actualizar_fin/<int:id>", methods=["GET", "POST"])
-@role_required(['admin', 'mantenimiento'])
+# Comentado temporalmente: @role_required(['admin', 'mantenimiento'])
 def update_ticket_fin(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -114,7 +112,7 @@ def update_ticket_fin(id):
     return mantenimiento_view.update_ticket_fin(ticket)
 
 @mantenimiento_bp.route("/mantenimiento/delete/<int:id>", methods=["POST"])
-@role_required(['admin'])
+# Comentado temporalmente: @role_required(['admin'])
 def delete_ticket(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
