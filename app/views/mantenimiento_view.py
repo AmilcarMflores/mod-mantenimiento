@@ -6,12 +6,11 @@ def crear_ticket():
         "crear.html",
         title="Crear ticket",
         current_user=current_user
-        users=users,
     )
 
 def list_ticket(tickets):
     return render_template(
-        "base.html",
+        "list_tickets.html",
         tickets=tickets,
         title="Lista de tickets",
         current_user=current_user,
@@ -28,7 +27,7 @@ def update_ticket_ini(ticket):
 def update_ticket_fin(ticket):
     return render_template(
         "actualizar_fin.html",
-        title="Actualizar ticket fin",
+        title="Finalizar ticket",
         ticket=ticket,
         current_user=current_user,
     )
@@ -39,5 +38,5 @@ def generate_ticket(ticket):
         title="Ticket",
         ticket=ticket,
         current_user=current_user,
-        download_url=url_for('ticket.download_report')
+        download_url=url_for('mantenimiento.download_report', id=ticket.id_mantenimiento)
     )
