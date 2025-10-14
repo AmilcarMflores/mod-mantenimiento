@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Actualizar ticket</h2>
+
+<form method="post">
+    <div class="field">
+        <label for="responsable">Responsable:</label>
+        <div class="control">
+            <input type="text" id="responsable" name="responsable" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label for="fecha_ini">Fecha de Inicio:</label>
+        <div class="control">
+            <input type="date" id="fecha_ini" name="fecha_ini" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label for="fecha_fin">Fecha de Fin:</label>
+        <div class="control">
+            <input type="date" id="fecha_fin" name="fecha_fin" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label for="costo">Costo:</label>
+        <div class="control">
+            <input type="text" id="costo" name="costo" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="control">
+            <button type="submit" class="button is-primary">Actualizar Ticket</button>
+        </div>
+    </div> 
+</form>
+{% endblock %}
