@@ -32,7 +32,7 @@
                     <td>{{ ticket.responsable or 'Sin asignar' }}</td>
                     <td>{{ ticket.fecha_ini or '-' }}</td>
                     <td>{{ ticket.fecha_fin or '-' }}</td>
-                    <td>{{ '${:,.2f}'.format(ticket.costo) if ticket.costo else '-' }}</td>
+                    <td>{{ 'Bs{:,.2f}'.format(ticket.costo) if ticket.costo else '-' }}</td>
                     <td>
                         {% if ticket.trabajo_realizado %}
                             <span class="status status-completed">Completado</span>

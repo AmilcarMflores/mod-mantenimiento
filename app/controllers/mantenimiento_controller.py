@@ -185,5 +185,5 @@ def download_report(id):
     return Response(
         buffer, 
         mimetype='application/pdf', 
-        headers={"Content-Disposition": f"attachment;filename=ticket_{ticket.id_mantenimiento}.pdf"}
+        headers={"Content-Disposition": f"attachment;filename=ticket_{ticket.id_mantenimiento}.xlsx"}
     )
