@@ -32,7 +32,7 @@
                     <td>{{ ticket.responsable or 'Sin asignar' }}</td>
                     <td>{{ ticket.fecha_ini or '-' }}</td>
                     <td>{{ ticket.fecha_fin or '-' }}</td>
-                    <td>{{ 'Bs{:,.2f}'.format(ticket.costo) if ticket.costo else '-' }}</td>
+                    <td>{{ '${:,.2f}'.format(ticket.costo) if ticket.costo else '-' }}</td>
                     <td>
                         {% if ticket.trabajo_realizado %}
                             <span class="status status-completed">Completado</span>
@@ -44,13 +44,24 @@
                     </td>
                     <td class="actions">
                         {% if not ticket.responsable %}
-                            <a href="{{ url_for('mantenimiento.update_ticket_ini', id=ticket.id_mantenimiento) }}" class="btn btn-primary">Iniciar</a>
+                            <a href="{{ url_for('mantenimiento.update_ticket_ini', id=ticket.id_mantenimiento) }}" 
+                               class="btn btn-primary" title="Iniciar mantenimiento">Iniciar</a>
                         {% elif not ticket.trabajo_realizado %}
-                            <a href="{{ url_for('mantenimiento.update_ticket_fin', id=ticket.id_mantenimiento) }}" class="btn btn-success">Finalizar</a>
+                            <a href="{{ url_for('mantenimiento.update_ticket_fin', id=ticket.id_mantenimiento) }}" 
+                               class="btn btn-success" title="Finalizar mantenimiento">Finalizar</a>
                         {% endif %}
-                        <a href="{{ url_for('mantenimiento.generate_ticket', id=ticket.id_mantenimiento) }}" class="btn btn-info">Ver</a>
-                        <form method="POST" action="{{ url_for('mantenimiento.delete_ticket', id=ticket.id_mantenimiento) }}" style="display:inline;" onsubmit="return confirm('¿Está seguro de eliminar este ticket?');">
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        
+                        <a href="{{ url_for('chat.chat_ticket', ticket_id=ticket.id_mantenimiento) }}" 
+                           class="btn btn-info" title="Chat del ticket">💬</a>
+                        
+                        <a href="{{ url_for('mantenimiento.generate_ticket', id=ticket.id_mantenimiento) }}" 
+                           class="btn btn-info" title="Ver detalles">Ver</a>
+                        
+                        <form method="POST" 
+                              action="{{ url_for('mantenimiento.delete_ticket', id=ticket.id_mantenimiento) }}" 
+                              style="display:inline;" 
+                              onsubmit="return confirm('¿Está seguro de eliminar este ticket?');">
+                            <button type="submit" class="btn btn-danger" title="Eliminar ticket">Eliminar</button>
                         </form>
                     </td>
                 </tr>

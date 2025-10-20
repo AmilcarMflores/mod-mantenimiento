@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, flash, Response
+from flask import Blueprint, request, redirect, url_for, flash, Response, current_app
 from models.mantenimiento_model import Mantenimiento
 from views import mantenimiento_view
 from datetime import datetime
@@ -21,6 +21,10 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_socketio():
+    """Obtener instancia de socketio desde el contexto de la app"""
+    return current_app.extensions.get('socketio')
+
 @mantenimiento_bp.route("/mantenimiento")
 def list_mantenimiento():
     mantenimientos = Mantenimiento.get_all()
@@ -34,13 +38,19 @@ def create_ticket():
 
         ticket = Mantenimiento(descripcion=descripcion, prioridad=prioridad)
         ticket.save()
+        
+        # Notificar al admin sobre el nuevo ticket
+        socketio = get_socketio()
+        if socketio:
+            from socket_events import notify_new_ticket
+            notify_new_ticket(socketio, ticket)
+        
         flash("Ticket creado correctamente.", "success")
         return redirect(url_for("mantenimiento.list_mantenimiento"))
     
     return mantenimiento_view.crear_ticket()
 
 @mantenimiento_bp.route("/mantenimiento/actualizar_ini/<int:id>", methods=["GET", "POST"])
-# Comentado temporalmente: @role_required(['admin', 'mantenimiento'])
 def update_ticket_ini(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -67,6 +77,12 @@ def update_ticket_ini(id):
                 prioridad=prioridad
             )
 
+            # Notificar actualización
+            socketio = get_socketio()
+            if socketio:
+                from socket_events import notify_ticket_updated
+                notify_ticket_updated(socketio, ticket, 'iniciado')
+
             flash("Ticket actualizado correctamente.", "success")
             return redirect(url_for("mantenimiento.list_mantenimiento"))
         except Exception as e:
@@ -75,7 +91,6 @@ def update_ticket_ini(id):
     return mantenimiento_view.update_ticket_ini(ticket)
 
 @mantenimiento_bp.route("/mantenimiento/actualizar_fin/<int:id>", methods=["GET", "POST"])
-# Comentado temporalmente: @role_required(['admin', 'mantenimiento'])
 def update_ticket_fin(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
@@ -104,6 +119,13 @@ def update_ticket_fin(id):
                 trabajo_realizado=trabajo_realizado, 
                 evidencia_url=evidencia_url
             )
+            
+            # Notificar finalización
+            socketio = get_socketio()
+            if socketio:
+                from socket_events import notify_ticket_updated
+                notify_ticket_updated(socketio, ticket, 'finalizado')
+            
             flash("Ticket finalizado correctamente.", "success")
             return redirect(url_for("mantenimiento.list_mantenimiento"))
         except Exception as e:
@@ -112,12 +134,17 @@ def update_ticket_fin(id):
     return mantenimiento_view.update_ticket_fin(ticket)
 
 @mantenimiento_bp.route("/mantenimiento/delete/<int:id>", methods=["POST"])
-# Comentado temporalmente: @role_required(['admin'])
 def delete_ticket(id):
     ticket = Mantenimiento.get_by_id(id)
     if not ticket:
         flash("Ticket no encontrado.", "error")
         return redirect(url_for("mantenimiento.list_mantenimiento"))
+    
+    # Notificar eliminación antes de borrar
+    socketio = get_socketio()
+    if socketio:
+        from socket_events import notify_ticket_updated
+        notify_ticket_updated(socketio, ticket, 'eliminado')
     
     ticket.delete()
     flash("Ticket eliminado correctamente.", "success")
@@ -145,7 +172,6 @@ def download_report(id):
 
     styles = getSampleStyleSheet()
     title_style = styles['Heading1']
-    heading_style = styles['Heading2']
     normal_style = styles['Normal']
 
     # Título
@@ -185,5 +211,5 @@ def download_report(id):
     return Response(
         buffer, 
         mimetype='application/pdf', 
-        headers={"Content-Disposition": f"attachment;filename=ticket_{ticket.id_mantenimiento}.xlsx"}
+        headers={"Content-Disposition": f"attachment;filename=ticket_{ticket.id_mantenimiento}.pdf"}
     )

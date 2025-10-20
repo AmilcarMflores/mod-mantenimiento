@@ -44,10 +44,39 @@ nav a {
     padding: 0.5rem 1rem;
     border-radius: 4px;
     transition: background 0.3s;
+    position: relative;
 }
 
 nav a:hover {
     background: #34495e;
+}
+
+/* Badge de notificaciones */
+.notification-link {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+.badge-pulse {
+    animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
 }
 
 main {
@@ -109,6 +138,9 @@ footer {
     color: #2c3e50;
     border-bottom: 2px solid #3498db;
     padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 /* Tabla de Tickets */

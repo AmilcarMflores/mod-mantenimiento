@@ -1,5 +1,8 @@
 flask
-flask_login
 flask_sqlalchemy
+flask_socketio
+python-socketio
+python-engineio
 reportlab
 werkzeug
+eventlet

@@ -11,8 +11,15 @@
         <h1>Sistema de Mantenimiento</h1>
         <nav>
             <ul>
-                <li><a href="{{ url_for('mantenimiento.list_mantenimiento') }}">Inicio</a></li>
-                <li><a href="{{ url_for('mantenimiento.create_ticket') }}">Crear ticket</a></li>
+                <li><a href="{{ url_for('mantenimiento.list_mantenimiento') }}">🏠 Inicio</a></li>
+                <li><a href="{{ url_for('mantenimiento.create_ticket') }}">➕ Crear ticket</a></li>
+                <li><a href="{{ url_for('chat.chat_general') }}">💬 Chat</a></li>
+                <li>
+                    <a href="{{ url_for('chat.notificaciones') }}" class="notification-link">
+                        🔔 Notificaciones
+                        <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </header>
@@ -36,5 +43,50 @@
     <footer>
         <p>&copy; 2025 Sistema de Mantenimiento. Todos los derechos reservados.</p>
     </footer>
+
+    <!-- Script para actualizar badge de notificaciones -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // Actualizar contador de notificaciones cada vez que carga la página
+        fetch('/api/notificaciones/no-leidas')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('notification-badge');
+                if (badge && data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                }
+            })
+            .catch(error => console.error('Error al cargar notificaciones:', error));
+
+        // Conectar a socket para recibir notificaciones en tiempo real
+        const socket = io();
+        
+        socket.on('connect', () => {
+            socket.emit('join_notifications');
+        });
+
+        socket.on('new_notification', (notification) => {
+            // Actualizar badge
+            const badge = document.getElementById('notification-badge');
+            if (badge) {
+                const currentCount = parseInt(badge.textContent) || 0;
+                badge.textContent = currentCount + 1;
+                badge.style.display = 'inline-block';
+                
+                // Animación del badge
+                badge.classList.add('badge-pulse');
+                setTimeout(() => badge.classList.remove('badge-pulse'), 1000);
+            }
+            
+            // Mostrar notificación del navegador
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Nueva notificación', {
+                    body: notification.mensaje,
+                    icon: '/static/favicon.ico'
+                });
+            }
+        });
+    </script>
 </body>
 </html>
